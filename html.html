@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+div#video_player_box{ width:550px; background:#000; margin:0px auto;}
+div#video_controls_bar{ background: #333; padding:10px; color:#CCC; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;}
+
+
+input#seekslider{ width:180px; }
+input#volumeslider{ width: 80px;}
+input[type='range'] {
+    -webkit-appearance: none !important;
+    background: #000;
+	border:#666 1px solid;
+    height:4px;
+}
+label{
+    color:white;
+}
+</style>
+<script>
+var vid, playbtn, seekslider, curtimetext, durtimetext, mutebtn, volumeslider, fullscreenbtn;
+function intializePlayer(){
+	// Set object references
+	vid = document.getElementById("my_video");
+	playbtn = document.getElementById("playpausebtn");
+	seekslider = document.getElementById("seekslider");
+	curtimetext = document.getElementById("curtimetext");
+	durtimetext = document.getElementById("durtimetext");
+	mutebtn = document.getElementById("mutebtn");
+	volumeslider = document.getElementById("volumeslider");
+	plus_5 = document.getElementById("plus_5");
+    minus_5 = document.getElementById("minus_5");
+    first = document.getElementById("first");
+    let end = document.getElementById("end");
+    speed = document.getElementById("speed");
+    fullscreenbtn = document.getElementById("fullscreenbtn");
+    end.innerHTML=">>";
+    first.innerHTML="<<";
+    plus_5.innerHTML=">";
+    minus_5.innerHTML="<";
+	// Add event listeners
+	playbtn.addEventListener("click",playPause,false);
+	seekslider.addEventListener("change",vidSeek,false);
+	vid.addEventListener("timeupdate",seektimeupdate,false);
+	mutebtn.addEventListener("click",vidmute,false);
+	volumeslider.addEventListener("change",setvolume,false);
+	fullscreenbtn.addEventListener("click",toggleFullScreen,false)
+    speed.addEventListener("change",setspeed,false);
+    first.addEventListener("click",start,false);
+    end.addEventListener("click",end_fun,false);
+    minus_5.addEventListener("click",minus_5_fun,false);
+    plus_5.addEventListener("click",plus_5_fun,false);
+}   
+window.onload = intializePlayer;
+function playPause(){
+	if(vid.paused){
+		vid.play();
+		playbtn.innerHTML ="pause" ;
+	} else {
+		vid.pause();
+		playbtn.innerHTML= "play";
+	}
+}
+function vidSeek(){
+	var seekto = vid.duration * (seekslider.value / 100);
+	vid.currentTime = seekto;
+}
+function seektimeupdate(){
+	var nt = vid.currentTime * (100 / vid.duration);
+	seekslider.value = nt;
+	var curmins = Math.floor(vid.currentTime / 60);
+	var cursecs = Math.floor(vid.currentTime - curmins * 60);
+	var durmins = Math.floor(vid.duration / 60);
+	var dursecs = Math.floor(vid.duration - durmins * 60);
+	if(cursecs < 10){ cursecs = "0"+cursecs; }
+	if(dursecs < 10){ dursecs = "0"+dursecs; }
+	if(curmins < 10){ curmins = "0"+curmins; }
+	if(durmins < 10){ durmins = "0"+durmins; }
+	curtimetext.innerHTML = curmins+":"+cursecs;
+	durtimetext.innerHTML = durmins+":"+dursecs;
+}
+function vidmute(){
+	if(vid.muted){
+		vid.muted = false;
+		mutebtn.innerHTML = "Mute";
+	} else {
+		vid.muted = true;
+		mutebtn.innerHTML = "Unmute";
+	}
+}
+function setvolume(){
+	vid.volume = volumeslider.value / 100;
+}
+
+function setspeed(){
+    console.log(speed.value) ;
+    vid.playbackRate = speed.value ; 
+    
+}
+
+function start ()
+{
+    vid.currentTime = 0 ;
+}
+
+function end_fun()
+{
+    vid.currentTime = vid.duration ;
+}
+
+function minus_5_fun()
+{
+    vid.currentTime -= 5 ;
+}
+
+function plus_5_fun()
+{
+    vid.currentTime += 5 ;
+}
+
+function toggleFullScreen(){
+	if(vid.requestFullScreen){
+		vid.requestFullScreen();
+	} else if(vid.webkitRequestFullScreen){
+		vid.webkitRequestFullScreen();
+	} else if(vid.mozRequestFullScreen){
+		vid.mozRequestFullScreen();
+	}
+}
+</script>
+</head>
+<body>
+<div id="video_player_box">
+  <video 
+  id="my_video" width="550" height="310">
+    <source src="frozen.mp4">
+
+  </video>
+  <div id="video_controls_bar">
+    <button id="playpausebtn">play</button>
+    <input id="seekslider" type="range" min="0" max="100" value="0" step="1">
+    <span id="curtimetext">00:00</span> / <span id="durtimetext">00:00</span>
+    <button id="mutebtn">Mute</button>
+    <input id="volumeslider" type="range" min="0" max="100" value="100" step="1">
+    <button id="fullscreenbtn">[ &nbsp; ]</button>
+  </div>
+  <div id = "second_box">
+    <button id="first"></button>
+    <button id="plus_5" ></button>
+    <button id="minus_5"></button>
+    <button id="end"></button>
+    <label >speed:</label>
+    <input id="speed" type="range" min="0" max="2" value="1" step="0.1">
+  </div>
+</div>
+</body>
+</html>
